@@ -18,15 +18,17 @@ def calculate_margin(purchase_price, selling_price, platform_fee_rate=0.06,
     """품목별 마진을 계산합니다.
 
     Args:
-        purchase_price: 매입가 (원)
-        selling_price: 판매가 (원)
+        purchase_price: 매입가 (KRW, 원)
+        selling_price: 판매가 (KRW, 원)
         platform_fee_rate: 플랫폼 수수료율 (기본 6%)
-        shipping_cost: 배송비 (원)
-        packaging_cost: 포장비 (원)
+        shipping_cost: 배송비 (KRW, 기본 3,000원)
+        packaging_cost: 포장비 (KRW, 기본 1,000원)
 
     Returns:
         dict: 마진 분석 결과
     """
+    if selling_price <= 0:
+        selling_price = 0
     platform_fee = int(selling_price * platform_fee_rate)
     total_cost = purchase_price + platform_fee + shipping_cost + packaging_cost
     profit = selling_price - total_cost
@@ -125,8 +127,11 @@ def main():
 
     # 엑셀 출력
     output_file = "resale_analysis_output.xlsx"
-    df.to_excel(output_file, index=False)
-    print(f"\n분석 결과가 '{output_file}'에 저장되었습니다.")
+    try:
+        df.to_excel(output_file, index=False)
+        print(f"\n분석 결과가 '{output_file}'에 저장되었습니다.")
+    except Exception as e:
+        print(f"\n엑셀 저장 실패 (openpyxl 설치 필요): {e}")
 
 
 if __name__ == "__main__":
